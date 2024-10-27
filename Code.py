@@ -133,15 +133,20 @@ def codificar_archivo():
         frecuencias = calcular_frecuencia(archivo)
         raiz = construir_arbol_huffman(frecuencias)
         codigos = generar_codigos_binarios(raiz)
+        
         with open(archivo, 'r', encoding='utf-8') as f:
             contenido = f.read()
         
         contenido_codificado = codificar_contenido(contenido, codigos)
-
+        
+        ruta_codificado = os.path.join(os.getcwd(), "archivo_codificado.txt")
+        with open(ruta_codificado, "w") as f:
+            f.write(contenido_codificado)
+        
         tamano_original, tamano_codificado = comparar_tamaños(archivo, contenido_codificado)
-
         mostrar_resultado_comparacion(tamano_original, tamano_codificado)
 
+        messagebox.showinfo("Éxito", f"El archivo ha sido codificado y guardado en '{ruta_codificado}'.")
     except FileNotFoundError:
         messagebox.showerror("Error", "Archivo no encontrado")
     except Exception as e:
@@ -168,24 +173,24 @@ def mostrar_resultado_comparacion(tamano_original, tamano_codificado):
     boton_regresar.pack()
 
 def decodificar_archivo():
-    archivo = entrada_archivo.get()
-    if not archivo:
-        messagebox.showerror("Error", "Por favor, ingresa la ruta del archivo")
-        return
     try:
-        frecuencias = calcular_frecuencia(archivo)
+        ruta_codificado = os.path.join(os.getcwd(), "archivo_codificado.txt")
+        with open(ruta_codificado, 'r') as f:
+            contenido_codificado = f.read()
+
+        archivo_original = entrada_archivo.get()
+        frecuencias = calcular_frecuencia(archivo_original)
         raiz = construir_arbol_huffman(frecuencias)
-        codigos = generar_codigos_binarios(raiz)
-        with open(archivo, 'r', encoding='utf-8') as f:
-            contenido = f.read()
-
-        contenido_codificado = codificar_contenido(contenido, codigos)
+        
         contenido_decodificado = decodificar_contenido(contenido_codificado, raiz)
-
-        messagebox.showinfo("Éxito", "El archivo ha sido decodificado con éxito.")
-
+        
+        ruta_decodificado = os.path.join(os.getcwd(), "archivo_decodificado.txt")
+        with open(ruta_decodificado, "w", encoding='utf-8') as f:
+            f.write(contenido_decodificado)
+        
+        messagebox.showinfo("Éxito", f"El archivo ha sido decodificado y guardado en '{ruta_decodificado}'.")
     except FileNotFoundError:
-        messagebox.showerror("Error", "Archivo no encontrado")
+        messagebox.showerror("Error", "Archivo codificado no encontrado")
     except Exception as e:
         messagebox.showerror("Error", str(e))
 
@@ -229,6 +234,3 @@ boton_arbol = tk.Button(ventana, text="Mostrar Árbol", command=calcular_e_impri
 boton_arbol.pack()
 
 ventana.mainloop()
-
-
-
